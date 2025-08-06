@@ -2,22 +2,20 @@ import { getServerSession } from 'next-auth/next'
 import { authOptions } from '@/lib/auth'
 import { redirect } from 'next/navigation'
 import Link from 'next/link'
-import { signOut } from 'next-auth/react'
-import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card'
 import { BarChart3, Target, TrendingUp, Zap, Plus, History } from 'lucide-react'
+import { Button } from '@/components/ui/button'
+import SignOutButton from './sign-out-button'
 import { prisma } from '@/lib/db'
 
 async function getDashboardStats(userId: string) {
   try {
-    // Get user's recipe analyses count
     const analysesResult = await prisma.$queryRaw<{count: bigint}[]>`
       SELECT COUNT(*) as count 
       FROM "RecipeAnalysis" 
       WHERE "userId" = ${userId}
     `
 
-    // Get this month's analyses
     const monthlyAnalysesResult = await prisma.$queryRaw<{count: bigint}[]>`
       SELECT COUNT(*) as count 
       FROM "RecipeAnalysis" 
@@ -25,7 +23,6 @@ async function getDashboardStats(userId: string) {
       AND "createdAt" >= date_trunc('month', CURRENT_DATE)
     `
 
-    // Get average SEO score
     const avgScoreResult = await prisma.$queryRaw<{avg: number | null}[]>`
       SELECT AVG("seoScore") as avg 
       FROM "RecipeAnalysis" 
@@ -59,7 +56,6 @@ export default async function DashboardPage() {
 
   return (
     <div className="min-h-screen bg-gray-50">
-      {/* Header */}
       <header className="bg-white shadow-sm border-b">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between items-center py-4">
@@ -69,25 +65,18 @@ export default async function DashboardPage() {
             </div>
             <div className="flex items-center space-x-4">
               <span className="text-sm text-gray-600">Welcome, {session.user.name || session.user.email}</span>
-              <form action={async () => {
-                'use server'
-                await signOut({ redirectTo: '/' })
-              }}>
-                <Button variant="outline" type="submit">Sign Out</Button>
-              </form>
+              <SignOutButton />
             </div>
           </div>
         </div>
       </header>
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        {/* Welcome Section */}
         <div className="mb-8">
           <h2 className="text-3xl font-bold text-gray-900">Dashboard</h2>
           <p className="mt-2 text-gray-600">Welcome to your RecipeRankPro dashboard</p>
         </div>
 
-        {/* Stats Cards */}
         <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
           <Card>
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
@@ -134,7 +123,6 @@ export default async function DashboardPage() {
           </Card>
         </div>
 
-        {/* Quick Actions */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
           <Card>
             <CardHeader>
@@ -148,9 +136,7 @@ export default async function DashboardPage() {
             </CardHeader>
             <CardFooter>
               <Link href="/dashboard/analyze" className="w-full">
-                <Button className="w-full">
-                  Start Analysis
-                </Button>
+                <Button className="w-full">Start Analysis</Button>
               </Link>
             </CardFooter>
           </Card>
@@ -170,15 +156,12 @@ export default async function DashboardPage() {
             </CardHeader>
             <CardFooter>
               <Link href="/dashboard/history" className="w-full">
-                <Button variant="outline" className="w-full">
-                  View History
-                </Button>
+                <Button variant="outline" className="w-full">View History</Button>
               </Link>
             </CardFooter>
           </Card>
         </div>
 
-        {/* Getting Started Section */}
         {stats.totalAnalyses === 0 && (
           <Card className="mb-8">
             <CardHeader>
@@ -190,27 +173,21 @@ export default async function DashboardPage() {
             <CardContent>
               <div className="space-y-4">
                 <div className="flex items-start gap-3">
-                  <div className="w-8 h-8 bg-orange-100 text-orange-600 rounded-full flex items-center justify-center text-sm font-semibold">
-                    1
-                  </div>
+                  <div className="w-8 h-8 bg-orange-100 text-orange-600 rounded-full flex items-center justify-center text-sm font-semibold">1</div>
                   <div>
                     <h4 className="font-medium">Choose a Recipe</h4>
                     <p className="text-sm text-gray-600">Pick a recipe from your food blog that you want to optimize for search engines.</p>
                   </div>
                 </div>
                 <div className="flex items-start gap-3">
-                  <div className="w-8 h-8 bg-orange-100 text-orange-600 rounded-full flex items-center justify-center text-sm font-semibold">
-                    2
-                  </div>
+                  <div className="w-8 h-8 bg-orange-100 text-orange-600 rounded-full flex items-center justify-center text-sm font-semibold">2</div>
                   <div>
                     <h4 className="font-medium">Enter Your Target Keyword</h4>
                     <p className="text-sm text-gray-600">Think about what people would search for to find your recipe (e.g., "easy chocolate cake recipe").</p>
                   </div>
                 </div>
                 <div className="flex items-start gap-3">
-                  <div className="w-8 h-8 bg-orange-100 text-orange-600 rounded-full flex items-center justify-center text-sm font-semibold">
-                    3
-                  </div>
+                  <div className="w-8 h-8 bg-orange-100 text-orange-600 rounded-full flex items-center justify-center text-sm font-semibold">3</div>
                   <div>
                     <h4 className="font-medium">Get AI-Powered Suggestions</h4>
                     <p className="text-sm text-gray-600">Our AI will analyze your recipe and provide optimized titles, descriptions, and SEO suggestions.</p>
@@ -226,7 +203,6 @@ export default async function DashboardPage() {
           </Card>
         )}
 
-        {/* Features Overview */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
           <Card>
             <CardHeader>
