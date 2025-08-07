@@ -7,7 +7,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Button } from '@/components/ui/button'
 import { Progress } from '@/components/ui/progress'
 import { Badge } from '@/components/ui/badge'
-import { BarChart3, Target, TrendingUp, Clock, Plus, Activity } from 'lucide-react'
+import { BarChart3, Target, TrendingUp, Clock, Plus, Activity, ExternalLink } from 'lucide-react'
 
 interface DashboardStats {
   totalRecipes: number
@@ -85,6 +85,10 @@ export default function DashboardPage() {
     if (score >= 80) return 'default' // green
     if (score >= 60) return 'secondary' // yellow
     return 'destructive' // red
+  }
+
+  const handleAnalysisClick = (analysisId: string) => {
+    router.push(`/analysis/${analysisId}`)
   }
 
   if (status === 'loading' || loading) {
@@ -252,7 +256,7 @@ export default function DashboardPage() {
                 <span>Recent Activity</span>
               </CardTitle>
               <CardDescription>
-                Your latest recipe analyses and optimizations
+                Your latest recipe analyses and optimizations (click to view details)
               </CardDescription>
             </CardHeader>
             <CardContent>
@@ -264,14 +268,21 @@ export default function DashboardPage() {
               ) : (
                 <div className="space-y-3">
                   {stats.recentAnalyses.map((analysis) => (
-                    <div key={analysis.id} className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
+                    <div 
+                      key={analysis.id} 
+                      className="flex items-center justify-between p-3 bg-gray-50 rounded-lg hover:bg-gray-100 cursor-pointer transition-colors"
+                      onClick={() => handleAnalysisClick(analysis.id)}
+                    >
                       <div className="flex-1 min-w-0">
                         <p className="text-sm font-medium text-gray-900 truncate">
                           {analysis.title}
                         </p>
-                        <p className="text-xs text-gray-500 truncate">
-                          {analysis.recipeUrl}
-                        </p>
+                        <div className="flex items-center space-x-2 mt-1">
+                          <p className="text-xs text-gray-500 truncate flex-1">
+                            {analysis.recipeUrl}
+                          </p>
+                          <ExternalLink className="h-3 w-3 text-gray-400" />
+                        </div>
                         <p className="text-xs text-gray-400">
                           {formatDate(analysis.createdAt)}
                         </p>
@@ -294,7 +305,7 @@ export default function DashboardPage() {
                 className="w-full mt-4"
                 onClick={() => router.push('/history')}
               >
-                View History
+                View All Analyses
               </Button>
             </CardContent>
           </Card>
