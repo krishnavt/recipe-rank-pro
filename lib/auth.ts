@@ -19,7 +19,7 @@ export const authOptions: NextAuthOptions = {
         }
 
         try {
-          // Use raw query to find user (avoiding prepared statement issues)
+          // Use raw query to avoid prepared statement conflicts
           const users = await prisma.$queryRaw<any[]>`
             SELECT * FROM "User" WHERE email = ${credentials.email} LIMIT 1
           `
@@ -52,8 +52,9 @@ export const authOptions: NextAuthOptions = {
     strategy: "jwt"
   },
   pages: {
-    signIn: "/auth/login",
-    signUp: "/auth/register"
+    signIn: "/auth/login"
+    // Note: NextAuth doesn't have a built-in signUp page option
+    // Registration is handled through our custom API route
   },
   callbacks: {
     async jwt({ token, user }) {
