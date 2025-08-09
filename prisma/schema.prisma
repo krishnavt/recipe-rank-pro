@@ -55,6 +55,7 @@ model User {
   subscriptions  Subscription[]
   seoTemplates   SeoTemplate[]
   teamMembers    TeamMember[]
+  invitedTeamMembers TeamMember[] @relation("TeamInviter")
   organizationId String?
   organization   Organization? @relation(fields: [organizationId], references: [id])
 }
@@ -159,7 +160,6 @@ model TeamMember {
   user           User         @relation(fields: [userId], references: [id], onDelete: Cascade)
   organization   Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
   inviter        User?        @relation("TeamInviter", fields: [invitedBy], references: [id])
-  invites        TeamMember[] @relation("TeamInviter")
   @@unique([userId, organizationId])
   @@index([organizationId])
   @@index([role])
